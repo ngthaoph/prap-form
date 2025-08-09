@@ -53,6 +53,9 @@ function Affordability({
           Check Eligibility
         </button>
       </form>
+      {state.affordability === true
+        ? "Your rent is affordable"
+        : "Your rent is not affordable"}
     </div>
   );
 }

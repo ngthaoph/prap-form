@@ -4,24 +4,30 @@ import Affordability from "./components/Affordability";
 import Catchment from "./components/Catchment";
 import ClientDetails from "./components/ClientDetails";
 import { ifInCatchment } from "./services/helper";
-//FORM
-const initialFormState = {
-  name: "",
 
+const initialFormState = {
+  postcode: "",
+  name: "",
   rent: "",
   income: "",
+  affordability: false,
+  incomeLimit: false,
 };
+
 const formReducer = (state, action) => {
   switch (action.type) {
+    case "postcode":
+      return { ...state, postcode: action.payload };
     case "name":
-      return {
-        ...state,
-        name: action.payload,
-      };
+      return { ...state, name: action.payload };
     case "rent":
       return { ...state, rent: action.payload };
     case "income":
       return { ...state, income: action.payload };
+    case "affordability":
+      return { ...state, affordability: action.payload };
+    case "incomeLimit":
+      return { ...state, incomeLimit: action.payload };
     default:
       return state;
   }
@@ -29,52 +35,50 @@ const formReducer = (state, action) => {
 
 function App() {
   const [currentPage, setCurrentPage] = useState(1);
-  const handleCurrentPage = (delta: number): void => {
-    setCurrentPage((prevPage) => prevPage + delta);
-  };
   const [postcode, setPostcode] = useState("");
   const [submittedPostcode, setSubmittedPostcode] = useState("");
   const [searched, setSearched] = useState(false);
-  const [rent, setRent] = useState("");
-  const [income, setIncome] = useState("");
-
-  //APPLICANT DETAILS
   const [state, dispatch] = useReducer(formReducer, initialFormState);
-  console.log(state);
+
+  const handleCurrentPage = (delta: number) => {
+    setCurrentPage((prevPage) => prevPage + delta);
+  };
 
   const handleClientDetails = (e) => {
-    dispatch({
-      type: "name",
-      payload: e.target.value,
-    });
+    dispatch({ type: "name", payload: e.target.value });
   };
+
   const handleSubmitClientDetails = (e) => {
     e.preventDefault();
     console.log("Client details submitted");
   };
-  ////////////////
-  //AFFORDABLITY
+
   const handleIncome = (e) => {
     dispatch({ type: "income", payload: e.target.value });
+    const isWithinIncomeLimit = state.income < 1500;
+    isWithinIncomeLimit &&
+      dispatch({ type: "incomeLimit", payload: !state.incomeLimit });
   };
+
   const handleRent = (e) => {
     dispatch({ type: "rent", payload: e.target.value });
   };
+
   const handleSubmitAffordability = (e) => {
     e.preventDefault();
-    const rentValue = parseFloat(rent);
-    const incomeValue = parseFloat(income);
+    const rentValue = parseFloat(state.rent);
+    const incomeValue = parseFloat(state.income);
 
     const percentage = (rentValue / incomeValue) * 100;
-    const isAffordable = percentage <= 55; // Rent must be ≤ 55% of income
-    const isWithinIncomeLimit = incomeValue < 1500; // Income must be < $1500
-    console.log(isWithinIncomeLimit);
+
+    percentage <= 55
+      ? dispatch({ type: "affordability", payload: true })
+      : dispatch({ type: "affordability", payload: false });
   };
 
-  ////////////////
-
-  const handlePostcode = (event) => {
-    setPostcode(event.target.value);
+  const handlePostcode = (e) => {
+    setPostcode(e.target.value);
+    dispatch({ type: "postcode", payload: e.target.value });
   };
 
   const handleSubmitPostcode = (e) => {
@@ -87,8 +91,12 @@ function App() {
   const inCatchment = ifInCatchment(submittedPostcode);
 
   return (
-    <div>
-      <h1>PRIVATE RENTAL ASSISTANCE PROGRAM</h1>
+    <div className="max-w-xl mx-auto p-6">
+      <h1 className="text-2xl font-bold text-center mb-6">
+        Private Rental Assistance Program
+      </h1>
+
+      {/* PAGE FLOW */}
       {currentPage === 1 && (
         <Catchment
           handleSubmitPostcode={handleSubmitPostcode}
@@ -99,13 +107,15 @@ function App() {
           submittedPostcode={submittedPostcode}
         />
       )}
+
       {currentPage === 2 && (
         <ClientDetails
+          state={state}
           handleClientDetails={handleClientDetails}
           handleSubmitClientDetails={handleSubmitClientDetails}
-          state={state}
         />
       )}
+
       {currentPage === 3 && (
         <Affordability
           state={state}
@@ -114,99 +124,26 @@ function App() {
           handleSubmitAffordability={handleSubmitAffordability}
         />
       )}
-      {/*FORM DIRECTION*/}
-      <div className="flex justify-center gap-5">
-        <button type="button" onClick={() => handleCurrentPage(-1)}>
-          BACK
+
+      {/* NAVIGATION BUTTONS */}
+      <div className="flex justify-between mt-8">
+        <button
+          type="button"
+          onClick={() => handleCurrentPage(-1)}
+          disabled={currentPage === 1}
+          className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400 disabled:opacity-50"
+        >
+          Back
         </button>
-        <button type="button" onClick={() => handleCurrentPage(1)}>
-          PROCEED
+        <button
+          type="button"
+          onClick={() => handleCurrentPage(1)}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          Proceed
         </button>
       </div>
     </div>
-
-    // <div className="flex justify-center p-4">
-    //   <div>
-    //     <div>
-    //       {!searched && (
-    //         <form
-    //           className="flex flex-col border-2 justify-start gap-4 p-4"
-    //           onSubmit={handleSubmit}
-    //         >
-    //           <label className="flex flex-row gap-4">
-    //             <div className="bg-blue-900 text-white p-1">Postcode</div>
-    //             <input
-    //               className="bg-pink-300 p-1"
-    //               type="text"
-    //               name="postcode"
-    //               value={postcode}
-    //               onChange={handlePostcode}
-    //             />
-    //           </label>
-    //           <button className="flex justify-center" type="submit">
-    //             <div className="bg-cyan-600 p-1 text-white">SUBMIT</div>
-    //           </button>
-    //         </form>
-    //       )}
-
-    //       {searched && (
-    //         <div className="border p-4 mt-4">
-    //           <div className="mb-2">
-    //             {inCatchment
-    //               ? "✅ You are within our catchment"
-    //               : "❌ You are not within our catchment"}
-    //           </div>
-    //           <button
-    //             className="bg-gray-300 p-1"
-    //             onClick={() => setSearched(false)}
-    //           >
-    //             Back
-    //           </button>
-    //         </div>
-    //       )}
-    //     </div>
-
-    //     {step === 2 && (
-    //       <div>
-    //         <form
-    //           className="flex flex-col border-2 justify-start gap-4 p-4 mt-4"
-    //           onSubmit={handleEligibility}
-    //         >
-    //           <label className="flex flex-row gap-4">
-    //             <div className="bg-blue-900 text-white p-1">Rent ($)</div>
-    //             <input
-    //               className="bg-pink-300 p-1"
-    //               type="number"
-    //               value={rent}
-    //               onChange={(e) => setRent(e.target.value)}
-    //             />
-    //           </label>
-    //           <label className="flex flex-row gap-4">
-    //             <div className="bg-blue-900 text-white p-1">Income ($)</div>
-    //             <input
-    //               className="bg-pink-300 p-1"
-    //               type="number"
-    //               value={income}
-    //               onChange={(e) => setIncome(e.target.value)}
-    //             />
-    //           </label>
-    //           <button className="flex justify-center" type="submit">
-    //             <div className="bg-cyan-600 p-1 text-white">
-    //               Check Eligibility
-    //             </div>
-    //           </button>
-    //         </form>
-
-    //         {(state.isAffordable || state.isIncomeLimit) && (
-    //           <div className="mt-4 border p-2">
-    //             <div>Affordable: {state.isAffordable ? "Yes" : "No"}</div>
-    //             <div>Income Limit: {state.isIncomeLimit ? "Yes" : "No"}</div>
-    //           </div>
-    //         )}
-    //       </div>
-    //     )}
-    //   </div>
-    // </div>
   );
 }
 
