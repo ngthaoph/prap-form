@@ -1,4 +1,3 @@
-import React from "react";
 import { FormState } from "./../App";
 
 type OutcomeProps = {
