@@ -1,13 +1,22 @@
 import React from "react";
 import { FormState } from "./../App";
+
 type ClientDetailsProps = {
-  handleClientDetails: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleClientFirstName: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleClientLastName: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmitClientDetails: (e: React.FormEvent<HTMLFormElement>) => void;
+  handleClientPhone: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleClientEmail: (e: React.ChangeEvent<HTMLInputElement>) => void;
   state: FormState;
 };
+
 function ClientDetails({
-  handleClientDetails,
+  handleClientFirstName,
+  handleClientLastName,
+  handleClientPhone,
+  handleClientEmail,
   handleSubmitClientDetails,
+
   state,
 }: ClientDetailsProps) {
   return (
@@ -19,33 +28,56 @@ function ClientDetails({
         onSubmit={handleSubmitClientDetails}
         className="flex flex-col gap-4"
       >
+        {/* FIRST NAME */}
         <label className="flex flex-col text-gray-700 font-medium">
           First Name
           <input
             type="text"
-            name="name"
-            value={state.name}
-            onChange={handleClientDetails}
-            className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={state.clientDetails.firstName}
+            onChange={handleClientFirstName}
             placeholder="Enter your first name"
+            className="mt-1 p-2 border border-gray-300 rounded"
           />
         </label>
 
-        {/* <label className="flex flex-col text-gray-700 font-medium">
-          Phone Number
+        {/* LAST NAME */}
+        <label className="flex flex-col text-gray-700 font-medium">
+          Last Name
           <input
             type="text"
-            name="phone"
-            value={state.applicant.phone}
-            onChange={handleClientDetails}
-            className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter your phone number"
+            value={state.clientDetails.lastName}
+            onChange={handleClientLastName}
+            placeholder="Enter your last name"
+            className="mt-1 p-2 border border-gray-300 rounded"
           />
-        </label> */}
+        </label>
+
+        {/* PHONE */}
+        <label className="flex flex-col text-gray-700 font-medium">
+          Phone
+          <input
+            type="text"
+            value={state.clientDetails.phone}
+            onChange={handleClientPhone}
+            placeholder="Enter your phone"
+            className="mt-1 p-2 border border-gray-300 rounded"
+          />
+        </label>
+        {/* PHONE */}
+        <label className="flex flex-col text-gray-700 font-medium">
+          Phone
+          <input
+            type="text"
+            value={state.clientDetails.email}
+            onChange={handleClientEmail}
+            placeholder="Enter your email"
+            className="mt-1 p-2 border border-gray-300 rounded"
+          />
+        </label>
 
         <button
           type="submit"
-          className="mt-4 bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 transition-colors"
+          className="mt-4 bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
         >
           Submit Details
         </button>

@@ -2,25 +2,30 @@ import { useState, useReducer } from "react";
 import Affordability from "./components/Affordability";
 import Catchment from "./components/Catchment";
 import ClientDetails from "./components/ClientDetails";
+import Outcome from "./components/Outcome";
 
+type ClientDetails = {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+};
 export interface FormState {
   postcode: string;
-  name: string;
+  clientDetails: ClientDetails;
   rent: string;
   income: string;
   affordability: boolean;
   incomeLimit: boolean;
 }
-const initialFormState: {
-  postcode: string;
-  name: string;
-  rent: string;
-  income: string;
-  affordability: boolean;
-  incomeLimit: boolean;
-} = {
+const initialFormState: FormState = {
   postcode: "",
-  name: "",
+  clientDetails: {
+    firstName: "",
+    lastName: "",
+    phone: "",
+    email: "",
+  },
   rent: "",
   income: "",
   affordability: false,
@@ -28,7 +33,10 @@ const initialFormState: {
 };
 type FormAction =
   | { type: "postcode"; payload: string }
-  | { type: "name"; payload: string }
+  | {
+      type: "client_details";
+      payload: ClientDetails;
+    }
   | { type: "rent"; payload: string }
   | { type: "income"; payload: string }
   | { type: "affordability"; payload: boolean }
@@ -38,8 +46,11 @@ const formReducer = (state: FormState, action: FormAction) => {
   switch (action.type) {
     case "postcode":
       return { ...state, postcode: action.payload };
-    case "name":
-      return { ...state, name: action.payload };
+    case "client_details":
+      return {
+        ...state,
+        clientDetails: action.payload,
+      };
     case "rent":
       return { ...state, rent: action.payload };
     case "income":
@@ -65,8 +76,41 @@ function App() {
     setCurrentPage((prevPage) => prevPage + delta);
   };
 
-  const handleClientDetails = (e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch({ type: "name", payload: e.target.value });
+  const handleClientFirstName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      type: "client_details",
+      payload: {
+        ...state.clientDetails,
+        firstName: e.target.value,
+      },
+    });
+  };
+  const handleClientLastName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      type: "client_details",
+      payload: {
+        ...state.clientDetails,
+        lastName: e.target.value,
+      },
+    });
+  };
+  const handleClientPhone = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      type: "client_details",
+      payload: {
+        ...state.clientDetails,
+        phone: e.target.value,
+      },
+    });
+  };
+  const handleClientEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      type: "client_details",
+      payload: {
+        ...state.clientDetails,
+        email: e.target.value,
+      },
+    });
   };
 
   const handleSubmitClientDetails = (e: React.FormEvent<HTMLFormElement>) => {
@@ -132,8 +176,11 @@ function App() {
       {currentPage === 2 && (
         <ClientDetails
           state={state}
-          handleClientDetails={handleClientDetails}
           handleSubmitClientDetails={handleSubmitClientDetails}
+          handleClientFirstName={handleClientFirstName}
+          handleClientLastName={handleClientLastName}
+          handleClientPhone={handleClientPhone}
+          handleClientEmail={handleClientEmail}
         />
       )}
 
@@ -145,6 +192,7 @@ function App() {
           handleSubmitAffordability={handleSubmitAffordability}
         />
       )}
+      {currentPage === 4 && <Outcome state={state} />}
 
       {/* NAVIGATION BUTTONS */}
       <div className="flex justify-between mt-8">
