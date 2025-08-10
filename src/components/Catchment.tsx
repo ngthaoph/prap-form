@@ -1,13 +1,22 @@
 import React from "react";
 import { ifInCatchment } from "../services/helper";
+type CatchmentProps = {
+  handleSubmitPostcode: (e: React.FormEvent<HTMLFormElement>) => void;
+  postcode: string;
+  handlePostcode: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  searched: boolean;
+  setSearched: React.Dispatch<React.SetStateAction<boolean>>;
+  submittedPostcode: string;
+};
 
 function Catchment({
   handleSubmitPostcode,
   postcode,
   handlePostcode,
   searched,
+  setSearched,
   submittedPostcode,
-}) {
+}: CatchmentProps) {
   const inCatchment = ifInCatchment(submittedPostcode);
 
   return (

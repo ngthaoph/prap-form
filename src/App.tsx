@@ -1,11 +1,24 @@
-import "./App.css";
 import { useState, useReducer } from "react";
 import Affordability from "./components/Affordability";
 import Catchment from "./components/Catchment";
 import ClientDetails from "./components/ClientDetails";
-import { ifInCatchment } from "./services/helper";
 
-const initialFormState = {
+export interface FormState {
+  postcode: string;
+  name: string;
+  rent: string;
+  income: string;
+  affordability: boolean;
+  incomeLimit: boolean;
+}
+const initialFormState: {
+  postcode: string;
+  name: string;
+  rent: string;
+  income: string;
+  affordability: boolean;
+  incomeLimit: boolean;
+} = {
   postcode: "",
   name: "",
   rent: "",
@@ -13,8 +26,15 @@ const initialFormState = {
   affordability: false,
   incomeLimit: false,
 };
+type FormAction =
+  | { type: "postcode"; payload: string }
+  | { type: "name"; payload: string }
+  | { type: "rent"; payload: string }
+  | { type: "income"; payload: string }
+  | { type: "affordability"; payload: boolean }
+  | { type: "incomeLimit"; payload: boolean };
 
-const formReducer = (state, action) => {
+const formReducer = (state: FormState, action: FormAction) => {
   switch (action.type) {
     case "postcode":
       return { ...state, postcode: action.payload };
@@ -39,32 +59,33 @@ function App() {
   const [submittedPostcode, setSubmittedPostcode] = useState("");
   const [searched, setSearched] = useState(false);
   const [state, dispatch] = useReducer(formReducer, initialFormState);
+  console.log(state);
 
   const handleCurrentPage = (delta: number) => {
     setCurrentPage((prevPage) => prevPage + delta);
   };
 
-  const handleClientDetails = (e) => {
+  const handleClientDetails = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({ type: "name", payload: e.target.value });
   };
 
-  const handleSubmitClientDetails = (e) => {
+  const handleSubmitClientDetails = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Client details submitted");
   };
 
-  const handleIncome = (e) => {
+  const handleIncome = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({ type: "income", payload: e.target.value });
-    const isWithinIncomeLimit = state.income < 1500;
+    const isWithinIncomeLimit = Number(state.income) < 1500;
     isWithinIncomeLimit &&
       dispatch({ type: "incomeLimit", payload: !state.incomeLimit });
   };
 
-  const handleRent = (e) => {
+  const handleRent = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch({ type: "rent", payload: e.target.value });
   };
 
-  const handleSubmitAffordability = (e) => {
+  const handleSubmitAffordability = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const rentValue = parseFloat(state.rent);
     const incomeValue = parseFloat(state.income);
@@ -76,19 +97,19 @@ function App() {
       : dispatch({ type: "affordability", payload: false });
   };
 
-  const handlePostcode = (e) => {
+  const handlePostcode = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPostcode(e.target.value);
     dispatch({ type: "postcode", payload: e.target.value });
   };
 
-  const handleSubmitPostcode = (e) => {
+  const handleSubmitPostcode = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmittedPostcode(postcode);
     setPostcode("");
     setSearched(true);
   };
 
-  const inCatchment = ifInCatchment(submittedPostcode);
+  // const inCatchment = ifInCatchment(submittedPostcode);
 
   return (
     <div className="max-w-xl mx-auto p-6">

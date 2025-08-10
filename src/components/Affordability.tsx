@@ -1,11 +1,18 @@
 import React from "react";
+import { FormState } from "./../App";
 
+type AffordabilityProps = {
+  state: FormState;
+  handleIncome: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleRent: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSubmitAffordability: (e: React.FormEvent<HTMLFormElement>) => void;
+};
 function Affordability({
   state,
   handleIncome,
   handleRent,
   handleSubmitAffordability,
-}) {
+}: AffordabilityProps) {
   const { income, rent } = state;
 
   return (
