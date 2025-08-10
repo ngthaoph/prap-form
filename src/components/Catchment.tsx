@@ -14,7 +14,7 @@ function Catchment({
   postcode,
   handlePostcode,
   searched,
-  setSearched,
+
   submittedPostcode,
 }: CatchmentProps) {
   const inCatchment = ifInCatchment(submittedPostcode);

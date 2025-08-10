@@ -1,4 +1,4 @@
-export const ifInCatchment = (postcode) => {
+export const ifInCatchment = (postcode: string) => {
   const postcodes = [
     "3056",
     "3073",
